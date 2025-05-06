@@ -1,5 +1,6 @@
-import random
 import string
+import secrets
+import random
 
 data_pick = string.ascii_letters
 while True:
@@ -41,4 +42,9 @@ while True:
           else:
                continue
 
-print(data_pick)
+pass_storage = ""
+pass_storage2 = ""
+for x in range(password_length):
+     pass_storage += secrets.choice(data_pick)
+
+print("Password Generated: ", pass_storage)
