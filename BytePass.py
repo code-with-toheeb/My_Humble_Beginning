@@ -2,7 +2,10 @@ import string
 import secrets
 import os
 import json
-import pyperclip
+
+
+domain_name = input("Enter the domain you want to create password for: ")
+filename = input("Enter filename: ")
 
 def get_password_length():
     while True:
@@ -19,38 +22,6 @@ def get_password_length():
     return length
 
 
-def data_bank():
-    data_bank = string.ascii_letters
-    
-    while True:
-        d_wise = input("Do you want to insert digit to your password Y/N").lower()
-
-        if d_wise == 'y':
-            data_bank += string.digits
-            break
-        elif d_wise == 'n':
-            rethink = input("Caution!Digit makes password stronger Are you sure you want to continue Y/N").lower()
-
-            if rethink == 'y':
-                break
-            else:
-                continue
-     
-    while True:
-        p_wise = input("Do you want to insert punctuation to your password Y/N").lower()
-
-        if p_wise == 'y':
-            data_bank += string.punctuation
-            break
-        elif d_wise == 'n':
-            rethink = input("Caution!Punctuation makes password stronger Are you sure you want to continue Y/N").lower()
-
-            if rethink == 'y':
-                break
-            else:
-                continue
-    return data_bank
-
 
 def pass_storage(length, character_pool):
     pass_storage = " "
@@ -60,41 +31,32 @@ def pass_storage(length, character_pool):
 
     return pass_storage
 
-
 length = get_password_length()
-character_pool = data_bank()
-
-password = pass_storage(length, character_pool)
-
-print("Your Secured Password is: ", password)
+data_bank = string.ascii_letters + string.digits + string.punctuation
+password = pass_storage(length, data_bank)
 
 
-domain_name = input("Enter the domain you want to create password for: ")
+def send_to_file():
+    global password
+    global domain_name
+    global filename
 
-password_domain_list = list()
-password_dictionary = dict()
+    password_dictionary = dict()
+
+    password_dictionary["DOMAIN NAME"] = domain_name
+    password_dictionary["PASSWORD"] = password
+
+    if not os.path.exists(filename) or os.path.getsize(filename) == 0:
+        with open(filename, "w") as file:
+            json.dump([], file)
+
+    with open(filename, "r") as file:
+        data = json.load(file)
+    
+    data.append(password_dictionary)
+
+    with open(filename, "w") as file:
+        json.dump(data, file, indent=4)
 
 
-password_dictionary["DOMAIN_NAME"] = domain_name
-password_dictionary["PASSWORD"] = pass_storage
-
-filename = 'file1.json'
-
-
-if not os.path.exists(filename) or os.path.getsize(filename) == 0:
-     with open(filename, 'w') as file:
-          json.dump([],file)
-
-
-
-with open(filename,"r") as file:
-     data = json.load(file)
-
-data.append(password_dictionary)
-
-with open(filename, "w") as file:
-     json.dump(data, file, indent = 4)
-
-pyperclip.copy(pass_storage)
-pyperclip.paste()
-print("Password File: ", )
+send_to_file()
